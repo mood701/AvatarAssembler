@@ -7,9 +7,9 @@
 
 void FAvatarCoreModule::StartupModule()
 {
-	// AVATAR_LOG_ADV(" with [{0} {1}] ForTest", *AVATAR_FUNCNAME, *AVATAR_LINE)
-	// AVATAR_WRN_ADV(" with [{0} {1}] ForTest", *AVATAR_FUNCNAME, *AVATAR_LINE)
-	// AVATAR_ERR_ADV(" with [{0} {1}] ForTest", *AVATAR_FUNCNAME, *AVATAR_LINE)
+	AVATAR_LOG_ADV(" with [%s %s] ForTest", *AVATAR_FUNCNAME, *AVATAR_LINE)
+	AVATAR_WRN_ADV(" with [%s %s] ForTest", *AVATAR_FUNCNAME, *AVATAR_LINE)
+	AVATAR_ERR_ADV(" with [%s %s] ForTest", *AVATAR_FUNCNAME, *AVATAR_LINE)
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
