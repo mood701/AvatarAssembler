@@ -38,6 +38,7 @@ public class AvatarAssembler : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"AvatarCore",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

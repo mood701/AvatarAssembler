@@ -18,3 +18,13 @@ DECLARE_LOG_CATEGORY_EXTERN(AvatarAssembler, Log, All);
 #define AVATAR_WRN_ADV(Fmt, ...) AVATAR_WRN("[%s %s] %s", *AVATAR_FUNCNAME, *AVATAR_LINE, *FString::Printf(TEXT(Fmt), ##__VA_ARGS__))
 #define AVATAR_ERR_ADV(Fmt, ...) AVATAR_ERR("[%s %s] %s", *AVATAR_FUNCNAME, *AVATAR_LINE, *FString::Printf(TEXT(Fmt), ##__VA_ARGS__))
 //
+
+// for assert
+
+#define AVATAR_CHECK(EXPR) check(EXPR)
+#define AVATAR_VERIFY(EXPR) verify(EXPR)
+#define AVATAR_ENSURE(EXPR) ensure(EXPR)
+
+#define AVATAR_CHECKF(EXPR, Fmt, ...) checkf(EXPR, TEXT(Fmt), ##__VA_ARGS__)
+
+//
