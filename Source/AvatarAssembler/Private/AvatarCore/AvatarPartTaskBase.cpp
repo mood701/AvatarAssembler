@@ -178,7 +178,7 @@ void UAvatarPartTaskBase::OnResourceLoaded()
 
 void UAvatarPartTaskBase::ApplyModifiers()
 {
-	AVATAR_CHECK(CurState == EAvatarPartState::RESOURCE_LOADED);
+	AVATAR_CHECK(CurState == EAvatarPartState::APPLY_MODIFIERS);
 	MoveToNextState();
 	for (const UAvatarPartModifierBase* Modifier : Modifiers)
 	{
