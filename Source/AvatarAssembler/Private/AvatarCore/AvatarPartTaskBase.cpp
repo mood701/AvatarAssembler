@@ -4,6 +4,9 @@
 #include "AvatarAssemblerCore/AvatarPartTaskBase.h"
 #include "AvatarAssemblerCore/AvatarPartModifierBase.h"
 #include "AvatarUtils/AvatarMacros.h"
+#include "Components/SkeletalMeshComponent.h"
+
+#define TASK_SIMPLE_EVENT(FUNC_NAME) AVATAR_SIMLPE_UOBJECT_EVENT(UAvatarPartTaskBase::##FUNC_NAME)
 
 void UAvatarPartTaskBase::AddModifier(UAvatarPartModifierBase* Modifier)
 {
@@ -46,6 +49,13 @@ UAvatarPartModifierBase* UAvatarPartTaskBase::GetModifierOfClass(TSubclassOf<UAv
 	return nullptr;
 }
 
+void UAvatarPartTaskBase::SetTargetMeshComponent(USkeletalMeshComponent* MeshComp)
+{
+	AVATAR_CHECK(MeshComp);
+	AVATAR_CHECK(CurState <= EAvatarPartState::PRE_START);
+	TargetMeshComp = MeshComp;
+}
+
 TArray<FSoftObjectPath> UAvatarPartTaskBase::CollectSoftObjects_Implement() const
 {
 	TArray<FSoftObjectPath> SoftPaths;
@@ -65,16 +75,16 @@ void UAvatarPartTaskBase::Start()
 {
 	if(CurState == EAvatarPartState::DONE)
 	{
-		SetState(EAvatarPartState::NONE);
+		Cancel();
 	}
 
 	AVATAR_CHECKF(CurState == EAvatarPartState::NONE, "Cancel() this task before restart.");
-	SetState(EAvatarPartState::PRE_START);
+	SetState(EAvatarPartState::PRE_START, TASK_SIMPLE_EVENT(OnPreStart));
 }
 
 void UAvatarPartTaskBase::Cancel()
 {
-	SetState(EAvatarPartState::NONE);
+	ResetState(TASK_SIMPLE_EVENT(OnCancel));
 }
 
 void UAvatarPartTaskBase::AddAssetUserData(UAssetUserData* InUserData)
@@ -135,24 +145,28 @@ void UAvatarPartTaskBase::PostEditChangeProperty(FPropertyChangedEvent& Property
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
-void UAvatarPartTaskBase::MoveToNextState()
+#endif
+
+void UAvatarPartTaskBase::MoveToNextState(FSimpleDelegate EventBeforePost)
 {
 	AVATAR_CHECK(CurState < EAvatarPartState::DONE);
-	
-	SetState(AvatarHelper::EnumAdd(CurState, 1));
+	SetState(AvatarHelper::EnumAdd(CurState, 1), EventBeforePost);
 }
 
-void UAvatarPartTaskBase::ResetState()
+void UAvatarPartTaskBase::ResetState(FSimpleDelegate EventBeforePost)
 {
-	SetState(EAvatarPartState::NONE);
+	SetState(EAvatarPartState::NONE, EventBeforePost);
 }
 
-void UAvatarPartTaskBase::SetState(EAvatarPartState InState)
+void UAvatarPartTaskBase::SetState(EAvatarPartState InState, FSimpleDelegate EventBeforePost)
 {
 	if(CurState != InState)
 	{
 		EAvatarPartState PreState = CurState;
 		CurState = InState;
+
+		// Handle Event after change state and before Post state changed
+		EventBeforePost.ExecuteIfBound();
 
 		if(OnAvatarPartStateChanged.IsBound())
 		{
@@ -164,34 +178,39 @@ void UAvatarPartTaskBase::SetState(EAvatarPartState InState)
 void UAvatarPartTaskBase::StartResourceLoad()
 {
 	AVATAR_CHECK(CurState == EAvatarPartState::PRE_START);
-	MoveToNextState();
-	// @Todo : Start resource load job
-	// -> callback OnResourceLoaded();
+	MoveToNextState(TASK_SIMPLE_EVENT(OnStartResourceLoad));
 }
 
-void UAvatarPartTaskBase::OnResourceLoaded()
+void UAvatarPartTaskBase::ResourceLoaded()
 {
 	AVATAR_CHECK(CurState == EAvatarPartState::RESOURCE_LOADING);
-	MoveToNextState();
-	ApplyModifiers();
+	MoveToNextState(TASK_SIMPLE_EVENT(OnResourceLoaded));
 }
 
-void UAvatarPartTaskBase::ApplyModifiers()
+void UAvatarPartTaskBase::ApplyModifiersBegin()
 {
-	AVATAR_CHECK(CurState == EAvatarPartState::APPLY_MODIFIERS);
-	MoveToNextState();
+	AVATAR_CHECK(CurState == EAvatarPartState::RESOURCE_LOADED);
+	MoveToNextState(TASK_SIMPLE_EVENT(OnApplyModifiersBegin));
+}
+
+void UAvatarPartTaskBase::ApplyModifiersEnd()
+{
+	AVATAR_CHECK(CurState == EAvatarPartState::APPLY_MODIFIERS_BEGIN);
+	MoveToNextState(TASK_SIMPLE_EVENT(OnApplyModifiersEnd));
+}
+
+void UAvatarPartTaskBase::TaskDone()
+{
+	AVATAR_CHECK(CurState == EAvatarPartState::APPLY_MODIFIERS_END);
+	MoveToNextState(TASK_SIMPLE_EVENT(OnTaskDone));
+}
+
+void UAvatarPartTaskBase::ExecuteModifiers()
+{
+	AVATAR_CHECK(CurState == EAvatarPartState::APPLY_MODIFIERS_BEGIN);
 	for (const UAvatarPartModifierBase* Modifier : Modifiers)
 	{
 		AVATAR_CHECK(Modifier);
 		Modifier->ModifyAvatarPart(this);
 	}
-	TaskDone();
 }
-
-void UAvatarPartTaskBase::TaskDone()
-{
-	AVATAR_CHECK(CurState == EAvatarPartState::RESOURCE_LOADED);
-	MoveToNextState();
-}
-
-#endif

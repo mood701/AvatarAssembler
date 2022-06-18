@@ -20,11 +20,13 @@ DECLARE_LOG_CATEGORY_EXTERN(AvatarAssembler, Log, All);
 //
 
 // for assert
-
 #define AVATAR_CHECK(EXPR) check(EXPR)
 #define AVATAR_VERIFY(EXPR) verify(EXPR)
 #define AVATAR_ENSURE(EXPR) ensure(EXPR)
 
 #define AVATAR_CHECKF(EXPR, Fmt, ...) checkf(EXPR, TEXT(Fmt), ##__VA_ARGS__)
+//
 
+// for create object
+#define AVATAR_SIMLPE_UOBJECT_EVENT(FUNC_NAME) FSimpleDelegate::CreateUObject(this, &##FUNC_NAME)
 //

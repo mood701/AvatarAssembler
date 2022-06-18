@@ -10,6 +10,7 @@
 #include "AvatarPartTaskBase.generated.h"
 
 class UAvatarPartModifierBase;
+class USkeletalMeshComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAvatarPartStateChanged, UAvatarPartTaskBase*, PartTask, EAvatarPartState, PreState, EAvatarPartState, CurState);
 
 UCLASS()
@@ -28,11 +29,15 @@ public:
 	UAvatarPartModifierBase* GetModifierOfClass(TSubclassOf<UAvatarPartModifierBase> InModifierClass);
 	// modifier
 
-	// getter
-	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
+	// getter and setter
+	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
 	FName GetPartName() const { return PartName; }
-	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
+	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
 	EAvatarPartState GetCurState() const { return CurState; }
+	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
+	USkeletalMeshComponent* GetTargetMeshComponent() const { return TargetMeshComp; }
+	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
+	void SetTargetMeshComponent(USkeletalMeshComponent* MeshComp);
 	// getter
 
 	// IInterface_AssetUserData -> bp
@@ -69,28 +74,44 @@ protected:
 #endif
 	
 	// state
-	void MoveToNextState();
-	void ResetState();
-	void SetState(EAvatarPartState InState);
+	void MoveToNextState(FSimpleDelegate EventBeforePost);
+	void ResetState(FSimpleDelegate EventBeforePost);
+	void SetState(EAvatarPartState InState, FSimpleDelegate EventBeforePost);
 	// state
 
 	// pipline
 	void StartResourceLoad();
-	void OnResourceLoaded();
-	void ApplyModifiers();
+	void ResourceLoaded();
+	void ApplyModifiersBegin();
+	void ApplyModifiersEnd();
 	void TaskDone();
+
+	virtual void OnPreStart() {};
+	virtual void OnCancel() {};
+	virtual void OnStartResourceLoad(){};
+	virtual void OnResourceLoaded() {};
+	virtual void OnApplyModifiersBegin() {};
+	virtual void OnApplyModifiersEnd() {};
+	virtual void OnTaskDone() {};
 	// pipline
 
+	// modify
+	void ExecuteModifiers();
+	//
+
+	UPROPERTY(VisibleAnywhere, Category = AvatarPartTask, SkipSerialization)
+	USkeletalMeshComponent* TargetMeshComp;
+
 private:
-	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = AvatarPartTask)
+	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = AvatarPartTask, SkipSerialization)
 	TArray<UAssetUserData*> AssetUserData;
 
-	UPROPERTY(EditAnywhere, Category = AvatarPartTask)
+	UPROPERTY(EditAnywhere, Category = AvatarPartTask, SkipSerialization)
 	TArray<UAvatarPartModifierBase*> Modifiers;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, SkipSerialization)
 	FName PartName;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	EAvatarPartState CurState;
 };
