@@ -38,4 +38,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	TSoftObjectPtr<USkeletalMesh> MeshPath;
+
+	UPROPERTY(VisibleAnywhere, SkipSerialization)
+	USkeletalMesh* Mesh;
 };

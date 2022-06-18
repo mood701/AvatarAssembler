@@ -5,6 +5,9 @@
 #include "AvatarAssemblerCore/AvatarPartTaskBase.h"
 #include "AvatarUtils/AvatarMacros.h"
 #include "AvatarAssemblerCore/AvatarCommonDefine.h"
+#include "AvatarCore/Lib/AvatarMeshLib.h"
+#include "AvatarAssemblerCore/Modifiers/AvatarPartModifier_AttachTo.h"
+#include "GameFramework/Character.h"
 
 // Sets default values for this component's properties
 UAvatarAssemblerComponent::UAvatarAssemblerComponent()
@@ -27,11 +30,60 @@ void UAvatarAssemblerComponent::BeginPlay()
 }
 
 
+USkeletalMeshComponent* UAvatarAssemblerComponent::GetOrNewMeshComponent()
+{
+	USkeletalMeshComponent* MeshComp = nullptr;
+	if(MeshComponentPool.Num())
+	{
+		MeshComp = MeshComponentPool.Pop();
+	}
+	else
+	{
+		AActor* Owner = GetOwner();
+		MeshComp = NewObject<USkeletalMeshComponent>(Owner);
+	}
+
+	//MeshComp->SetHiddenInGame(false);
+	return MeshComp;
+}
+
+void UAvatarAssemblerComponent::RetainMeshComponent(USkeletalMeshComponent* MeshComp)
+{
+	AVATAR_CHECK(MeshComp);
+	if(MeshComp)
+	{
+		FAvatarMeshLib::ClearAnimInstanceSafe(MeshComp);
+		MeshComp->SetSkeletalMesh(nullptr);
+		//MeshComp->SetHiddenInGame(true);
+		MeshComponentPool.Add(MeshComp);
+	}
+}
+
+USkeletalMeshComponent* UAvatarAssemblerComponent::GetMaster() const
+{
+	AActor* Owner = GetOwner();
+	AVATAR_CHECK(Owner);
+	if(ACharacter* Character = Cast<ACharacter>(Owner))
+	{
+		return Character->GetMesh();
+	}
+	else if(Owner)
+	{
+		return Owner->FindComponentByClass<USkeletalMeshComponent>();
+	}
+	return nullptr;
+}
+
 void UAvatarAssemblerComponent::AddTask(UAvatarPartTaskBase* Task)
 {
 	AVATAR_CHECK(Task);
 	const FName PartName = Task->GetPartName();
 	AVATAR_CHECK(PartName.IsValid());
+
+	if(PartName.IsNone() || Task == nullptr)
+	{
+		return;
+	}
 
 	if(PartTasks.Contains(PartName))
 	{
@@ -56,6 +108,13 @@ void UAvatarAssemblerComponent::StartRemainTasks()
 		EAvatarPartState State = Task->GetCurState();
 		if(State == EAvatarPartState::NONE)
 		{
+			if(Task->GetTargetMeshComponent() == nullptr)
+			{
+				UAvatarPartModifier_AttachTo* AttachTo = NewObject<UAvatarPartModifier_AttachTo>(this);
+				AttachTo->Init(GetMaster());
+				Task->AddModifier(AttachTo);
+				Task->SetTargetMeshComponent(GetOrNewMeshComponent());
+			}
 			Task->Start();
 		}
 	}

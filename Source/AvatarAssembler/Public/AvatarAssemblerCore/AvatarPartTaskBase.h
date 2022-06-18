@@ -39,6 +39,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
 	USkeletalMeshComponent* GetTargetMeshComponent() const { return TargetMeshComp; }
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
+	USkeletalMeshComponent* ResetTargetMeshComponent();
+	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
 	void SetTargetMeshComponent(USkeletalMeshComponent* MeshComp);
 	// getter
 
@@ -100,8 +102,7 @@ protected:
 	// modify
 	void ExecuteModifiers();
 	//
-
-	UPROPERTY(VisibleAnywhere, Category = AvatarPartTask, SkipSerialization)
+	UPROPERTY(SkipSerialization)
 	USkeletalMeshComponent* TargetMeshComp;
 
 private:

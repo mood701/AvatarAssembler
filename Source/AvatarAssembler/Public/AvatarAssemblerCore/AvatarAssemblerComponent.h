@@ -24,6 +24,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	TMap<FName, UAvatarPartTaskBase*> PartTasks;
 
+	UPROPERTY(VisibleAnywhere, SkipSerialization)
+	TArray<USkeletalMeshComponent*> MeshComponentPool;
+
+	virtual USkeletalMeshComponent* GetOrNewMeshComponent();
+	virtual void RetainMeshComponent(USkeletalMeshComponent* MeshComp);
+	USkeletalMeshComponent* GetMaster() const;
+
 public:	
 
 	UFUNCTION(BlueprintCallable, Category=AvatarAssemblerComponent)

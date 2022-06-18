@@ -49,9 +49,16 @@ UAvatarPartModifierBase* UAvatarPartTaskBase::GetModifierOfClass(TSubclassOf<UAv
 	return nullptr;
 }
 
+USkeletalMeshComponent* UAvatarPartTaskBase::ResetTargetMeshComponent()
+{
+	USkeletalMeshComponent* PrevComp = GetTargetMeshComponent();
+	TargetMeshComp = nullptr;
+	return PrevComp;
+}
+
 void UAvatarPartTaskBase::SetTargetMeshComponent(USkeletalMeshComponent* MeshComp)
 {
-	AVATAR_CHECK(MeshComp);
+	AVATAR_CHECKF(MeshComp, "Use ResetTargetMeshComponent if you want clear.");
 	AVATAR_CHECK(CurState <= EAvatarPartState::PRE_START);
 	TargetMeshComp = MeshComp;
 }
@@ -211,6 +218,9 @@ void UAvatarPartTaskBase::ExecuteModifiers()
 	for (const UAvatarPartModifierBase* Modifier : Modifiers)
 	{
 		AVATAR_CHECK(Modifier);
-		Modifier->ModifyAvatarPart(this);
+		if(Modifier)
+		{
+			Modifier->ModifyAvatarPart(this);
+		}
 	}
 }
