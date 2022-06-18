@@ -13,7 +13,7 @@ class UAvatarPartModifierBase;
 class USkeletalMeshComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAvatarPartStateChanged, UAvatarPartTaskBase*, PartTask, EAvatarPartState, PreState, EAvatarPartState, CurState);
 
-UCLASS()
+UCLASS(BlueprintType)
 class AVATARASSEMBLER_API UAvatarPartTaskBase : public UObject, public IInterface_AssetUserData, public IAvatarSoftCollector
 {
 	GENERATED_BODY()
@@ -32,6 +32,8 @@ public:
 	// getter and setter
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
 	FName GetPartName() const { return PartName; }
+	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
+	void SetPartName(const FName& InPartName) { PartName = InPartName; }
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
 	EAvatarPartState GetCurState() const { return CurState; }
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
