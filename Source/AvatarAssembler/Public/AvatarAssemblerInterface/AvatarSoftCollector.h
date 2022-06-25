@@ -13,17 +13,11 @@ class UAvatarSoftCollector : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class AVATARASSEMBLER_API IAvatarSoftCollector
 {
 	GENERATED_BODY()
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	TArray<FSoftObjectPath> CollectSoftObjects() const;
-
-	virtual TArray<FSoftObjectPath> CollectSoftObjects_Implement() const = 0;
+	virtual void CollectSoftObjects(TArray<FSoftObjectPath>& Paths) const = 0;
 };

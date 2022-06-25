@@ -11,6 +11,7 @@
 
 class UAvatarPartModifierBase;
 class USkeletalMeshComponent;
+class UAvatarLoaderBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAvatarPartStateChanged, UAvatarPartTaskBase*, PartTask, EAvatarPartState, PreState, EAvatarPartState, CurState);
 
 UCLASS(BlueprintType)
@@ -34,14 +35,19 @@ public:
 	FName GetPartName() const { return PartName; }
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
 	void SetPartName(const FName& InPartName) { PartName = InPartName; }
+
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
 	EAvatarPartState GetCurState() const { return CurState; }
+
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask, BlueprintPure)
 	USkeletalMeshComponent* GetTargetMeshComponent() const { return TargetMeshComp; }
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
 	USkeletalMeshComponent* ResetTargetMeshComponent();
 	UFUNCTION(BlueprintCallable, Category = AvatarPartTask)
 	void SetTargetMeshComponent(USkeletalMeshComponent* MeshComp);
+
+	void SetLoader(UAvatarLoaderBase* InLoader) { OwnLoader = InLoader; }
+	UAvatarLoaderBase* GetLoader() const { return OwnLoader; }
 	// getter
 
 	// IInterface_AssetUserData -> bp
@@ -54,7 +60,7 @@ public:
 	// IInterface_AssetUserData -> bp
 	
 	// IAvatarSoftCollector
-	virtual TArray<FSoftObjectPath> CollectSoftObjects_Implement() const;
+	virtual void CollectSoftObjects(TArray<FSoftObjectPath>& Paths) const;
 	// IAvatarSoftCollector
 
 	// pipline
@@ -102,6 +108,9 @@ protected:
 	// modify
 	void ExecuteModifiers();
 	//
+
+	TArray<FSoftObjectPath> GetSoftPaths() const;
+
 	UPROPERTY(SkipSerialization)
 	USkeletalMeshComponent* TargetMeshComp;
 
@@ -117,4 +126,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	EAvatarPartState CurState;
+
+	UPROPERTY(VisibleAnywhere, SkipSerialization)
+	UAvatarLoaderBase* OwnLoader;
 };

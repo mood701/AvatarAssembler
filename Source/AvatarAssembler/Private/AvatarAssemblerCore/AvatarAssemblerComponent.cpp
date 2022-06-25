@@ -3,10 +3,11 @@
 
 #include "AvatarAssemblerCore/AvatarAssemblerComponent.h"
 #include "AvatarAssemblerCore/AvatarPartTaskBase.h"
-#include "AvatarUtils/AvatarMacros.h"
 #include "AvatarAssemblerCore/AvatarCommonDefine.h"
-#include "AvatarCore/Lib/AvatarMeshLib.h"
+#include "AvatarAssemblerCore/Loader/AvatarCommonLoader.h"
 #include "AvatarAssemblerCore/Modifiers/PartModifiers/AvatarPartModifier_AttachTo.h"
+#include "AvatarUtils/AvatarMacros.h"
+#include "AvatarCore/Lib/AvatarMeshLib.h"
 #include "GameFramework/Character.h"
 
 // Sets default values for this component's properties
@@ -15,7 +16,7 @@ UAvatarAssemblerComponent::UAvatarAssemblerComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	OwnLoader = CreateDefaultSubobject<UAvatarCommonLoader>("CommonLoader");
 	// ...
 }
 
@@ -104,11 +105,13 @@ void UAvatarAssemblerComponent::AddTask(UAvatarPartTaskBase* Task)
 		if(PrevTaskBase != Task)
 		{
 			PrevTaskBase->Cancel();
+			Task->SetLoader(OwnLoader);
 			PartTasks[PartName] = Task;
 		}
 	}
 	else
 	{
+		Task->SetLoader(OwnLoader);
 		PartTasks.Add(PartName, Task);
 	}
 }

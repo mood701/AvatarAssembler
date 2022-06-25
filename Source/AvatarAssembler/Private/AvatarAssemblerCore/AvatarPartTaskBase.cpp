@@ -63,19 +63,16 @@ void UAvatarPartTaskBase::SetTargetMeshComponent(USkeletalMeshComponent* MeshCom
 	TargetMeshComp = MeshComp;
 }
 
-TArray<FSoftObjectPath> UAvatarPartTaskBase::CollectSoftObjects_Implement() const
+void UAvatarPartTaskBase::CollectSoftObjects(TArray<FSoftObjectPath>& Paths) const
 {
-	TArray<FSoftObjectPath> SoftPaths;
 	for (int32 DataIdx = 0; DataIdx < Modifiers.Num(); DataIdx++)
 	{
 		UAvatarPartModifierBase* Modifier = Modifiers[DataIdx];
 		if (Modifier != nullptr)
 		{
-			SoftPaths.Append(IAvatarSoftCollector::Execute_CollectSoftObjects(Modifier));
+			Modifier->CollectSoftObjects(Paths);
 		}
 	}
-
-	return SoftPaths;
 }
 
 void UAvatarPartTaskBase::Start()
@@ -223,4 +220,11 @@ void UAvatarPartTaskBase::ExecuteModifiers()
 			Modifier->ModifyAvatarPart(this);
 		}
 	}
+}
+
+TArray<FSoftObjectPath> UAvatarPartTaskBase::GetSoftPaths() const
+{
+	TArray<FSoftObjectPath> Paths;
+	CollectSoftObjects(Paths);
+	return Paths;
 }

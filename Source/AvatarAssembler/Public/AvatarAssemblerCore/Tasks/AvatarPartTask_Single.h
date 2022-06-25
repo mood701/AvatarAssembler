@@ -7,9 +7,7 @@
 #include "AvatarPartTask_Single.generated.h"
 
 class USkeletalMesh;
-/**
- * 
- */
+struct FAvatarHandleBase;
 UCLASS()
 class AVATARASSEMBLER_API UAvatarPartTask_Single : public UAvatarPartTaskBase
 {
@@ -23,6 +21,10 @@ public:
 	TSoftObjectPtr<USkeletalMesh> GetMeshPath() const { return MeshPath; }
 
 	//
+
+	// IAvatarSoftCollector
+	virtual void CollectSoftObjects(TArray<FSoftObjectPath>& Paths) const;
+	// IAvatarSoftCollector
 
 protected:
 
@@ -41,4 +43,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	USkeletalMesh* Mesh;
+
+	TSharedPtr<FAvatarHandleBase> ResourceHandle;
 };

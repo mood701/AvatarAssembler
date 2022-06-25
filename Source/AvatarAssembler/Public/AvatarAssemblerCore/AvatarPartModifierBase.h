@@ -17,7 +17,7 @@ class AVATARASSEMBLER_API UAvatarPartModifierBase : public UObject, public IAvat
 public:
 	virtual void ModifyAvatarPart(UAvatarPartTaskBase* PartTask) const PURE_VIRTUAL(UAvatarPartModifierBase::ModifyAvatarPart, );
 
-	virtual TArray<FSoftObjectPath> CollectSoftObjects_Implement() const override { return TArray<FSoftObjectPath>(); }
+	virtual void CollectSoftObjects(TArray<FSoftObjectPath>& Paths) const override {  }
 
 	UFUNCTION(BlueprintCallable)
 	int GetPriority() const { return Priority; }

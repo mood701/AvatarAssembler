@@ -7,6 +7,7 @@
 #include "AvatarAssemblerComponent.generated.h"
 
 class UAvatarPartTaskBase;
+class UAvatarLoaderBase;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AVATARASSEMBLER_API UAvatarAssemblerComponent : public UActorComponent
@@ -26,6 +27,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	TArray<USkeletalMeshComponent*> MeshComponentPool;
+
+	UPROPERTY(VisibleAnywhere, SkipSerialization)
+	UAvatarLoaderBase* OwnLoader;
 
 	virtual USkeletalMeshComponent* GetOrNewMeshComponent();
 	virtual void RetainMeshComponent(USkeletalMeshComponent* MeshComp);
