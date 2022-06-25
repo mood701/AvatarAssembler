@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AvatarAssemblerCore/Modifiers/AvatarPartModifier_AttachTo.h"
+#include "AvatarAssemblerCore/Modifiers/PartModifiers/AvatarPartModifier_AttachTo.h"
 #include "AvatarAssemblerCore/AvatarPartTaskBase.h"
 #include "AvatarUtils/AvatarMacros.h"
 

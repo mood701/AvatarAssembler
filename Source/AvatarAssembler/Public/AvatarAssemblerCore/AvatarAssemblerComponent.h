@@ -29,6 +29,7 @@ protected:
 
 	virtual USkeletalMeshComponent* GetOrNewMeshComponent();
 	virtual void RetainMeshComponent(USkeletalMeshComponent* MeshComp);
+	virtual bool CanRetainMeshComponent(USkeletalMeshComponent* MeshComp);
 	USkeletalMeshComponent* GetMaster() const;
 
 public:	
@@ -39,6 +40,4 @@ public:
 	void StartRemainTasks();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	
 };

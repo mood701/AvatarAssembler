@@ -1,7 +1,7 @@
 // Copyright (c) 2022 mood701
 
 
-#include "AvatarAssemblerCore/Modifiers/AvatarPropertyModifiers.h"
+#include "AvatarAssemblerCore/Modifiers/PropertyModifiers/BasicModifiers.h"
 #include "AvatarUtils/AvatarMacros.h"
 
 TArray<FSoftObjectPath> FAvatarPropertyModifier_UObject::CollectSoftObjects() const

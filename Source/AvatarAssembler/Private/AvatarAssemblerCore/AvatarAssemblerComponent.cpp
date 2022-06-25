@@ -6,7 +6,7 @@
 #include "AvatarUtils/AvatarMacros.h"
 #include "AvatarAssemblerCore/AvatarCommonDefine.h"
 #include "AvatarCore/Lib/AvatarMeshLib.h"
-#include "AvatarAssemblerCore/Modifiers/AvatarPartModifier_AttachTo.h"
+#include "AvatarAssemblerCore/Modifiers/PartModifiers/AvatarPartModifier_AttachTo.h"
 #include "GameFramework/Character.h"
 
 // Sets default values for this component's properties
@@ -43,7 +43,7 @@ USkeletalMeshComponent* UAvatarAssemblerComponent::GetOrNewMeshComponent()
 		MeshComp = NewObject<USkeletalMeshComponent>(Owner);
 	}
 
-	//MeshComp->SetHiddenInGame(false);
+	MeshComp->SetHiddenInGame(false);
 	return MeshComp;
 }
 
@@ -52,11 +52,24 @@ void UAvatarAssemblerComponent::RetainMeshComponent(USkeletalMeshComponent* Mesh
 	AVATAR_CHECK(MeshComp);
 	if(MeshComp)
 	{
-		FAvatarMeshLib::ClearAnimInstanceSafe(MeshComp);
-		MeshComp->SetSkeletalMesh(nullptr);
-		//MeshComp->SetHiddenInGame(true);
-		MeshComponentPool.Add(MeshComp);
+		if(CanRetainMeshComponent(MeshComp))
+		{
+			FAvatarMeshLib::ClearAnimInstanceSafe(MeshComp);
+			MeshComp->SetSkeletalMesh(nullptr);
+			MeshComp->SetHiddenInGame(true);
+			MeshComponentPool.Add(MeshComp);
+		}
+		else
+		{
+			MeshComp->DestroyComponent();
+		}
 	}
+}
+
+bool UAvatarAssemblerComponent::CanRetainMeshComponent(USkeletalMeshComponent* MeshComp)
+{
+	// keep component pool count less than 5
+	return MeshComponentPool.Num() < 5;
 }
 
 USkeletalMeshComponent* UAvatarAssemblerComponent::GetMaster() const
