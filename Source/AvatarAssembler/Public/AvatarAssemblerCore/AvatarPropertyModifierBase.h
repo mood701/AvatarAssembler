@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 
+#define DEL_PROPERTY_MODIFIER_CONSTURCT(TYPE_NAME) FAvatarPropertyModifier_##TYPE_NAME(const FName& InParamName) : FAvatarPropertyModifierBase(InParamName){}
+
 struct AVATARASSEMBLER_API FAvatarPropertyModifierBase
 {
 public:
