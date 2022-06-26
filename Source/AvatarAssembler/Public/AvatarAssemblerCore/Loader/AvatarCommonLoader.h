@@ -28,5 +28,5 @@ class AVATARASSEMBLER_API UAvatarCommonLoader : public UAvatarLoaderBase
 	GENERATED_BODY()
 
 public:
-	virtual TSharedPtr<FAvatarHandleBase> LoadObjects(const TArray<FSoftObjectPath>& ObjPaths, EAvatarLoadType LoadType, FSimpleDelegate Callback) override;
+	virtual void LoadObjects(const TArray<FSoftObjectPath>& ObjPaths, EAvatarLoadType LoadType, TSharedPtr<FAvatarHandleBase>& TargetHandle, FSimpleDelegate Callback) override;
 };

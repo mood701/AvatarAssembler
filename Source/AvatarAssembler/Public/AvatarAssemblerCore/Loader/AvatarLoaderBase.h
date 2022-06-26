@@ -15,6 +15,6 @@ class AVATARASSEMBLER_API UAvatarLoaderBase : public UObject
 	GENERATED_BODY()
 
 public:
-	virtual TSharedPtr<FAvatarHandleBase> LoadObjects(const TArray<FSoftObjectPath>& ObjPaths, EAvatarLoadType LoadType, FSimpleDelegate Callback = nullptr) 
-		PURE_VIRTUAL(UAvatarLoaderBase::LoadObjects, return nullptr;);
+	virtual void LoadObjects(const TArray<FSoftObjectPath>& ObjPaths, EAvatarLoadType LoadType, TSharedPtr<FAvatarHandleBase>& TargetHandle, FSimpleDelegate Callback = nullptr)
+		PURE_VIRTUAL(UAvatarLoaderBase::LoadObjects, return;);
 };

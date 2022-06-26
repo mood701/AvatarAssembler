@@ -29,13 +29,13 @@ void UAvatarPartTask_Single::OnStartResourceLoad()
 	AVATAR_CHECK(Loader);
 
 	TArray<FSoftObjectPath> SoftPaths = GetSoftPaths();
-	Loader->LoadObjects(SoftPaths, EAvatarLoadType::ASYNC, FSimpleDelegate::CreateUObject(this, &UAvatarPartTask_Single::ResourceLoaded));
+	Loader->LoadObjects(SoftPaths, EAvatarLoadType::ASYNC, ResourceHandle, FSimpleDelegate::CreateUObject(this, &UAvatarPartTask_Single::ResourceLoaded));
 }
 
 void UAvatarPartTask_Single::OnResourceLoaded()
 {
 	AVATAR_LOG("[%s_%s]", *AVATAR_FUNCNAME, *AVATAR_LINE);
-	Mesh = MeshPath.LoadSynchronous();
+	Mesh = MeshPath.Get();
 	ApplyModifiersBegin();
 }
 

@@ -22,7 +22,7 @@ bool FAvatarCommonLoaderHandle::IsValid() const
 	return OwnerHandle.IsValid();
 }
 
-TSharedPtr<FAvatarHandleBase> UAvatarCommonLoader::LoadObjects(const TArray<FSoftObjectPath>& ObjPaths, EAvatarLoadType LoadType, FSimpleDelegate Callback)
+void UAvatarCommonLoader::LoadObjects(const TArray<FSoftObjectPath>& ObjPaths, EAvatarLoadType LoadType, TSharedPtr<FAvatarHandleBase>& TargetHandle, FSimpleDelegate Callback)
 {
 	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
 	if(LoadType == EAvatarLoadType::ANY || LoadType == EAvatarLoadType::ASYNC)
@@ -30,13 +30,18 @@ TSharedPtr<FAvatarHandleBase> UAvatarCommonLoader::LoadObjects(const TArray<FSof
 		auto Handle = Streamable.RequestAsyncLoad(ObjPaths, Callback);
 		TSharedPtr<FAvatarCommonLoaderHandle> CommonLoaderHandle = MakeShareable(new FAvatarCommonLoaderHandle());
 		CommonLoaderHandle->SetHandle(Handle);
-		return CommonLoaderHandle;
+		TargetHandle = CommonLoaderHandle;
 	}
 	else if(LoadType == EAvatarLoadType::SYNC)
 	{
+		// make sure Handle set before call callback
+		// to avoid change handle in Callback
 		Streamable.RequestSyncLoad(ObjPaths);
+		TargetHandle.Reset();
 		Callback.ExecuteIfBound();
-		return nullptr;
 	}
-	return nullptr;
+	else
+	{
+		TargetHandle.Reset();
+	}
 }
