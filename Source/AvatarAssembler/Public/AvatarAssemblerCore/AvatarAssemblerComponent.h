@@ -8,6 +8,7 @@
 
 class UAvatarPartTaskBase;
 class UAvatarLoaderBase;
+class UAvatarDispatcherBase;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class AVATARASSEMBLER_API UAvatarAssemblerComponent : public UActorComponent
@@ -30,6 +31,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	UAvatarLoaderBase* OwnLoader;
+
+	UPROPERTY(VisibleAnywhere, SkipSerialization)
+	UAvatarDispatcherBase* Dispatcher;
 
 	virtual USkeletalMeshComponent* GetOrNewMeshComponent();
 	virtual void RetainMeshComponent(USkeletalMeshComponent* MeshComp);

@@ -25,6 +25,16 @@ enum class EAvatarLoadType : uint8
 	ANY,
 };
 
+UENUM()
+enum class EAvatarWorkType : uint8
+{
+	NONE,
+	SYNC,
+	FRAME,
+	ASYNC,
+	ANY,
+};
+
 namespace AvatarHelper
 {
 	template<class ENUM_TYPE>

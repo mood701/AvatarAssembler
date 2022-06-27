@@ -12,6 +12,7 @@
 class UAvatarPartModifierBase;
 class USkeletalMeshComponent;
 class UAvatarLoaderBase;
+class UAvatarDispatcherBase;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnAvatarPartStateChanged, UAvatarPartTaskBase*, PartTask, EAvatarPartState, PreState, EAvatarPartState, CurState);
 
 UCLASS(BlueprintType)
@@ -48,6 +49,9 @@ public:
 
 	void SetLoader(UAvatarLoaderBase* InLoader) { OwnLoader = InLoader; }
 	UAvatarLoaderBase* GetLoader() const { return OwnLoader; }
+
+	void SetDispatcher(UAvatarDispatcherBase* InDispatcher) { OwnDispatcher = InDispatcher; }
+	UAvatarDispatcherBase* GetDispatcher() const { return OwnDispatcher; }
 	// getter
 
 	// IInterface_AssetUserData -> bp
@@ -105,21 +109,17 @@ protected:
 	virtual void OnTaskDone() {};
 	// pipline
 
-	// modify
-	void ExecuteModifiers();
-	//
-
 	TArray<FSoftObjectPath> GetSoftPaths() const;
 
 	UPROPERTY(SkipSerialization)
 	USkeletalMeshComponent* TargetMeshComp;
 
+	UPROPERTY(EditAnywhere, Category = AvatarPartTask, SkipSerialization)
+	TArray<UAvatarPartModifierBase*> Modifiers;
+
 private:
 	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = AvatarPartTask, SkipSerialization)
 	TArray<UAssetUserData*> AssetUserData;
-
-	UPROPERTY(EditAnywhere, Category = AvatarPartTask, SkipSerialization)
-	TArray<UAvatarPartModifierBase*> Modifiers;
 
 	UPROPERTY(EditAnywhere, SkipSerialization)
 	FName PartName;
@@ -129,4 +129,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	UAvatarLoaderBase* OwnLoader;
+
+	UPROPERTY(VisibleAnywhere, SkipSerialization)
+	UAvatarDispatcherBase* OwnDispatcher;
 };

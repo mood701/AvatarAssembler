@@ -209,19 +209,6 @@ void UAvatarPartTaskBase::TaskDone()
 	MoveToNextState(TASK_SIMPLE_EVENT(OnTaskDone));
 }
 
-void UAvatarPartTaskBase::ExecuteModifiers()
-{
-	AVATAR_CHECK(CurState == EAvatarPartState::APPLY_MODIFIERS_BEGIN);
-	for (const UAvatarPartModifierBase* Modifier : Modifiers)
-	{
-		AVATAR_CHECK(Modifier);
-		if(Modifier)
-		{
-			Modifier->ModifyAvatarPart(this);
-		}
-	}
-}
-
 TArray<FSoftObjectPath> UAvatarPartTaskBase::GetSoftPaths() const
 {
 	TArray<FSoftObjectPath> Paths;

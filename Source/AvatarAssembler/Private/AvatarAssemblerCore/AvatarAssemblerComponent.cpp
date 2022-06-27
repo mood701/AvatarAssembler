@@ -6,9 +6,11 @@
 #include "AvatarAssemblerCore/AvatarCommonDefine.h"
 #include "AvatarAssemblerCore/Loader/AvatarCommonLoader.h"
 #include "AvatarAssemblerCore/Modifiers/PartModifiers/AvatarPartModifier_AttachTo.h"
+#include "AvatarAssemblerCore/Dispatcher/AvatarCommonDispatcher.h"
 #include "AvatarUtils/AvatarMacros.h"
 #include "AvatarCore/Lib/AvatarMeshLib.h"
 #include "GameFramework/Character.h"
+
 
 // Sets default values for this component's properties
 UAvatarAssemblerComponent::UAvatarAssemblerComponent()
@@ -16,7 +18,13 @@ UAvatarAssemblerComponent::UAvatarAssemblerComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+
 	OwnLoader = CreateDefaultSubobject<UAvatarCommonLoader>("CommonLoader");
+
+	Dispatcher = CreateDefaultSubobject<UAvatarCommonDispatcher>("CommonDispatcher");
+	TSharedPtr<FAvatarCommonDispatherStrategy> Strategy = MakeShareable(new FAvatarCommonDispatherStrategy());
+	Strategy->Init(1);
+	Dispatcher->SetStrategy(Strategy);
 	// ...
 }
 
@@ -106,12 +114,14 @@ void UAvatarAssemblerComponent::AddTask(UAvatarPartTaskBase* Task)
 		{
 			PrevTaskBase->Cancel();
 			Task->SetLoader(OwnLoader);
+			Task->SetDispatcher(Dispatcher);
 			PartTasks[PartName] = Task;
 		}
 	}
 	else
 	{
 		Task->SetLoader(OwnLoader);
+		Task->SetDispatcher(Dispatcher);
 		PartTasks.Add(PartName, Task);
 	}
 }
@@ -140,7 +150,14 @@ void UAvatarAssemblerComponent::StartRemainTasks()
 void UAvatarAssemblerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	AVATAR_CHECK(Dispatcher);
+	static float TestTime = 0;
+	TestTime += DeltaTime;
+	if(TestTime > 1.f)
+	{
+		TestTime -= 1.f;
+		Dispatcher->Tick(DeltaTime);
+	}
 	// ...
 }
 

@@ -38,6 +38,10 @@ protected:
 	virtual void OnTaskDone() override;
 	//
 
+	// modify
+	void ReqExecuteNextModifier();
+	//
+
 	UPROPERTY(VisibleAnywhere, SkipSerialization)
 	TSoftObjectPtr<USkeletalMesh> MeshPath;
 
@@ -45,4 +49,7 @@ protected:
 	USkeletalMesh* Mesh;
 
 	TSharedPtr<FAvatarHandleBase> ResourceHandle;
+	TSharedPtr<FAvatarHandleBase> ModifierHandle;
+
+	int NextModifierID = 0;
 };
